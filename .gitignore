@@ -1,0 +1,30 @@
+# create_gitignore.py
+
+gitignore_content = """
+# Ignore environment variables
+.env
+
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+
+# Ignore virtual environments
+.venv/
+env/
+venv/
+
+# Ignore uploads
+/static/uploads/
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore logs
+*.log
+"""
+
+with open(".gitignore", "w") as f:
+    f.write(gitignore_content.strip())
+
+print("✅ .gitignore file created.")
