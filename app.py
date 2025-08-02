@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 import os
-from pill_identifier.ocr import extract_imprint
+from pill_identifier.ocr import extract_text_ocrspace
 from pill_identifier.classifier import classify_pill
 import json
 
@@ -8,8 +8,7 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
 # Load pill database
-with open('pill_data.json') as f:
-    pill_data = json.load(f)
+
 
 @app.route('/')
 def index():
@@ -27,7 +26,7 @@ def upload():
     file.save(filepath)
 
     # Run OCR and Classification
-    imprint = extract_imprint(filepath)
+    imprint = extract_text_ocrspace(filepath)
     prediction = classify_pill(filepath)
 
     # Find best match from pill_data
@@ -42,4 +41,7 @@ def upload():
     return render_template('result.html', image=file.filename, match=best_match)
 
 if __name__ == '__main__':
+    text, confidence = extract_text_ocrspace("pill_identifier/pill_database/watson853.jpeg")
+    print("📦 Text:", text)
+    print("📊 Confidence:", confidence)
     app.run(debug=True)

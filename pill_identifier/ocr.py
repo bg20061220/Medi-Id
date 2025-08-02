@@ -1,63 +1,59 @@
-import cv2
-import pytesseract
-import numpy as np
+from dotenv import  load_dotenv
+import os
+import requests
+load_dotenv()
+import json 
+API_KEY = os.getenv("ORC_SPACE_API_KEY")
 
-# Tesseract path (update if needed)
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+def estimate_confidence(text):
+    """
+    Very basic confidence estimate:
+    - Longer clean text = higher confidence
+    - Short or junky OCR = lower confidence
+    """
+    clean_text = text.strip()
+    if not clean_text:
+        return 0.0
+    if any(char.isalpha() for char in clean_text) and len(clean_text) >= 4:
+        return 90.0  # Assume high if readable alphanumeric
+    if len(clean_text) <= 2:
+        return 30.0
+    return 50.0
 
-def extract_imprint(image_path):
-    img = cv2.imread(image_path)
-    if img is None:
-        print(f"❌ Error: Could not load image at {image_path}")
-        return None
 
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+def extract_text_ocrspace(image_path, api_key=API_KEY):
+    """
+    Uses OCR.Space API to extract text from an image.
+    Returns the extracted text and confidence (approximate).
+    """
+    url = "https://api.ocr.space/parse/image"
+    payload = {
+        'isOverlayRequired': False,
+        'OCREngine': 2,  # Better engine
+    }
 
-    clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8,8))
-    gray_enhanced = clahe.apply(gray)
+    with open(image_path, 'rb') as f:
+        files = {'file': f}
+        if api_key:
+            payload['apikey'] = api_key
+        else:
+            payload['apikey'] = api_key  # Public test key
 
-    edges = cv2.Canny(gray_enhanced, 100, 200)
-    kernel = np.ones((3,3), np.uint8)
-    edges_dilated = cv2.dilate(edges, kernel, iterations=1)
+        response = requests.post(url, files=files, data=payload)
+        result = response.json()
+        
 
-    combined = cv2.bitwise_or(gray_enhanced, edges_dilated)
+    try:
+        parsed = result["ParsedResults"][0]
+        text = parsed["ParsedText"]
+        confidence = estimate_confidence(text)
+        print(f"📦 OCR API text: {text.strip()}")
+        print(f"📊 Confidence: {confidence:.2f}%")
+        return text.strip(), confidence
+    except Exception as e:
+        print("❌ OCR API failed:", e)
+        return "", 0.0
 
-    thresh = cv2.adaptiveThreshold(
-        combined, 255,
-        cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-        cv2.THRESH_BINARY_INV, 11, 2
-    )
-
-    contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    filtered = [c for c in contours if cv2.contourArea(c) > 30]
-
-    if not filtered:
-        print("⚠️ No usable contours found. OCR on full image.")
-        processed_img = thresh
-    else:
-        x_min, y_min, x_max, y_max = img.shape[1], img.shape[0], 0, 0
-        for cnt in filtered:
-            x, y, w, h = cv2.boundingRect(cnt)
-            x_min = min(x_min, x)
-            y_min = min(y_min, y)
-            x_max = max(x_max, x + w)
-            y_max = max(y_max, y + h)
-
-        processed_img = gray[y_min:y_max, x_min:x_max]
-
-    processed_img = cv2.resize(processed_img, None, fx=2, fy=2, interpolation=cv2.INTER_LINEAR)
-
-    sharpen_kernel = np.array([[0, -1, 0],
-                               [-1, 5, -1],
-                               [0, -1, 0]])
-    processed_img = cv2.filter2D(processed_img, -1, sharpen_kernel)
-
-    cv2.imwrite("debug_processed.jpg", processed_img)
-    print("🖼️ Saved processed image as debug_processed.jpg")
-
-    config = r'--oem 3 --psm 6 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-    text = pytesseract.image_to_string(processed_img, config=config)
-
-    print("📦 OCR text detected:", text)
-    return text.strip()
-
+if __name__ == "__main__":
+    image_path = "pill_identifier/pill_database/v3601.jpg"
+    text, confidence = extract_text_ocrspace(image_path, api_key=API_KEY)
