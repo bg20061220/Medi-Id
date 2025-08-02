@@ -86,7 +86,7 @@ def logout():
 if __name__ in "__main__":
     with app.app_context():
         db.create_all()
-"""
+    """
     with app.app_context():
         # Delete all rows from the User table
         User.query.delete()
