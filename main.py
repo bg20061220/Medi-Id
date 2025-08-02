@@ -1,10 +1,15 @@
 from flask import Flask, render_template, request, redirect, session, url_for, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
+from dotenv import  load_dotenv
+import os
+load_dotenv()
+# Ensure the .env file is loaded
 
 # Create an app using Flask
-app = Flask(__name__)
-app.secret_key = "shhhsecret"
+app = Flask(__name__ )
+app.secret_key = os.getenv("SECRET_KEY")
+
 
 # Configure the database
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///th25medipillaiusers.db"
