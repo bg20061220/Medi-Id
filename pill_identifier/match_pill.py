@@ -43,7 +43,7 @@ def find_best_match(query_img_path, top_k=3):
 
 # 🧪 Test this
 if __name__ == "__main__":
-    test_image = "pill_identifier/test_images/test1.jpg"  # <- Replace with your test image
+    test_image = "pill_identifier/test_pill.jpg"  # <- Replace with your test image
     results = find_best_match(test_image)
     
     print("🔍 Top Matches:")

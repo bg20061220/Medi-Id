@@ -20,13 +20,14 @@ def index():
 
     if request.method == "POST":
         file = request.files["image"]
+        expected_name  = request.form.get("expected_name", "").strip()
         if file:
             filename = secure_filename(file.filename)
             uploaded_file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
             file.save(uploaded_file_path)
 
             # Run AI identification
-            result = identify_pill(uploaded_file_path)
+            result = identify_pill(uploaded_file_path , expected_name)
 
     return render_template("index.html", result=result, image_path=uploaded_file_path)
 

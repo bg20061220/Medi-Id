@@ -1,27 +1,24 @@
 from dotenv import  load_dotenv
 import os
 import requests
+from rapidfuzz import fuzz
 load_dotenv()
 import json 
 API_KEY = os.getenv("ORC_SPACE_API_KEY")
 
-def estimate_confidence(text):
+def estimate_confidence(ocr_text, expected_text):
     """
-    Very basic confidence estimate:
-    - Longer clean text = higher confidence
-    - Short or junky OCR = lower confidence
+    Returns a fuzzy match score between OCR output and expected name.
+    Score is a percentage representing similarity between two strings.
     """
-    clean_text = text.strip()
-    if not clean_text:
+    if not ocr_text or not expected_text:
         return 0.0
-    if any(char.isalpha() for char in clean_text) and len(clean_text) >= 4:
-        return 90.0  # Assume high if readable alphanumeric
-    if len(clean_text) <= 2:
-        return 30.0
-    return 50.0
+
+    score = fuzz.ratio(ocr_text.lower(), expected_text.lower())
+    return round(score, 2)
 
 
-def extract_text_ocrspace(image_path, api_key=API_KEY):
+def extract_text_ocrspace(image_path, expected_text="v3601" ,  api_key=API_KEY):
     """
     Uses OCR.Space API to extract text from an image.
     Returns the extracted text and confidence (approximate).
@@ -31,7 +28,7 @@ def extract_text_ocrspace(image_path, api_key=API_KEY):
         'isOverlayRequired': False,
         'OCREngine': 2,  # Better engine
     }
-
+    print("Expected text for confidence estimation:", expected_text)
     with open(image_path, 'rb') as f:
         files = {'file': f}
         if api_key:
@@ -46,7 +43,7 @@ def extract_text_ocrspace(image_path, api_key=API_KEY):
     try:
         parsed = result["ParsedResults"][0]
         text = parsed["ParsedText"]
-        confidence = estimate_confidence(text)
+        confidence = estimate_confidence(text , expected_text)
         print(f"📦 OCR API text: {text.strip()}")
         print(f"📊 Confidence: {confidence:.2f}%")
         return text.strip(), confidence
