@@ -1,13 +1,48 @@
+<!-- templates/index.html -->
+
 <!DOCTYPE html>
 <html>
   <head>
-    <title>MediID - Pill Identifier</title>
+    <title>Medi-ID: Pill Identifier</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 2rem;
+      }
+      img {
+        max-width: 300px;
+        margin-top: 1rem;
+      }
+      .result-box {
+        border: 1px solid #ccc;
+        padding: 1rem;
+        margin-top: 1rem;
+      }
+    </style>
   </head>
   <body>
-    <h1>Upload a Pill Image</h1>
-    <form action="/upload" method="POST" enctype="multipart/form-data">
-      <input type="file" name="pill_image" accept="image/*" required />
+    <h1>💊 Medi-ID: Pill Identifier</h1>
+    <form method="POST" enctype="multipart/form-data">
+      <label>Select a pill image:</label>
+      <input type="file" name="image" accept="image/*" required />
       <button type="submit">Identify Pill</button>
     </form>
+
+    {% if result %}
+    <div class="result-box">
+      <h2>🔍 AI Results:</h2>
+      <img src="{{ image_path }}" alt="Uploaded Pill" />
+      <p><strong>OCR Text:</strong> {{ result.ocr_text }}</p>
+      <p><strong>OCR Confidence:</strong> {{ result.ocr_confidence }}%</p>
+      <p><strong>Final Decision:</strong> {{ result.decision }}</p>
+
+      <h3>🔗 Top Matches (Image Similarity)</h3>
+      <ul>
+        {% for pill, score in result.image_matches[:3] %}
+        <li>{{ pill }} (similarity: {{ "%.4f"|format(score) }})</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
   </body>
 </html>

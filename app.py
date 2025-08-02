@@ -1,47 +1,34 @@
-from flask import Flask, render_template, request, redirect, url_for
+# app.py
+
+from flask import Flask, render_template, request
+from werkzeug.utils import secure_filename
+from pill_identifier.classifier import identify_pill
 import os
-from pill_identifier.ocr import extract_text_ocrspace
-from pill_identifier.classifier import classify_pill
-import json
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'static/uploads'
+UPLOAD_FOLDER = os.path.join("static", "uploads")
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
-# Load pill database
-
-
-@app.route('/')
+@app.route("/", methods=["GET", "POST"])
 def index():
-    return render_template('index.html')
+    result = None
+    uploaded_file_path = None
 
-@app.route('/upload', methods=['POST'])
-def upload():
-    if 'pill_image' not in request.files:
-        return "No file uploaded", 400
-    file = request.files['pill_image']
-    if file.filename == '':
-        return "Empty filename", 400
+    if request.method == "POST":
+        file = request.files["image"]
+        if file:
+            filename = secure_filename(file.filename)
+            uploaded_file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+            file.save(uploaded_file_path)
 
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-    file.save(filepath)
+            # Run AI identification
+            result = identify_pill(uploaded_file_path)
 
-    # Run OCR and Classification
-    imprint = extract_text_ocrspace(filepath)
-    prediction = classify_pill(filepath)
+    return render_template("index.html", result=result, image_path=uploaded_file_path)
 
-    # Find best match from pill_data
-    best_match = None
-    for pill in pill_data:
-        if imprint and imprint.lower() in pill['imprint'].lower():
-            best_match = pill
-            break
-        if prediction and prediction.lower() in pill['name'].lower():
-            best_match = pill
-
-    return render_template('result.html', image=file.filename, match=best_match)
-
-if __name__ == '__main__':
-    text, confidence = extract_text_ocrspace("pill_identifier/pill_database/watson853.jpeg")
-    print("📦 Text:", text)
-    print("📊 Confidence:", confidence)
+if __name__ == "__main__":
     app.run(debug=True)

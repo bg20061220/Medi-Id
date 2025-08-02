@@ -1,5 +1,5 @@
-from ocr import extract_text_ocrspace
-from match_pill import find_best_match
+from pill_identifier.ocr import extract_text_ocrspace
+from pill_identifier.match_pill import find_best_match
 
 def identify_pill(image_path , ocr_conf_treshold = 70):
     """
