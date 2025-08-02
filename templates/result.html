@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Result</title>
+  </head>
+  <body>
+    <h1>Pill Identification Result</h1>
+    <img
+      src="{{ url_for('static', filename='uploads/' + image) }}"
+      width="200"
+    />
+    {% if match %}
+    <h2>{{ match.name }}</h2>
+    <p><strong>Imprint:</strong> {{ match.imprint }}</p>
+    <p><strong>Color:</strong> {{ match.color }}</p>
+    <p><strong>Shape:</strong> {{ match.shape }}</p>
+    {% else %}
+    <p>No confident match found. Try a clearer image.</p>
+    {% endif %}
+    <a href="/">Try another</a>
+  </body>
+</html>

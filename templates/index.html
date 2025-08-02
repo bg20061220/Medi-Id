@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>MediID - Pill Identifier</title>
+  </head>
+  <body>
+    <h1>Upload a Pill Image</h1>
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+      <input type="file" name="pill_image" accept="image/*" required />
+      <button type="submit">Identify Pill</button>
+    </form>
+  </body>
+</html>
