@@ -7,6 +7,7 @@ import os
 from dotenv import load_dotenv
 from auth.routes import MedicationSchedule
 from auth.routes  import db
+from auth.routes import User
 
 load_dotenv()
 pill_bp = Blueprint('pill', __name__, template_folder='../templates')
@@ -63,14 +64,20 @@ def schedule_medicine():
     if len(dosage_times) != pills_per_day:
         Warning("❗Mismatch between number of dosages and times entered.")
         return redirect(url_for("pill.schedule_form", medicine_name=med_name))
+    user = User.query.filter_by(email="123test@gmail.com").first()
+    if not user:
+    # Handle user not found error
+        pass
 
     for time in dosage_times:
         new_entry = MedicationSchedule(
+             user_id = user.id,
             user_email=user_email,
             medicine_name=med_name,
             total_pills=total_pills,
             pills_per_day=pills_per_day,
-            time_of_day=time  # One entry per time for now
+            time_of_day=time,  # One entry per time for now
+           
         )
         db.session.add(new_entry)
 
@@ -78,5 +85,19 @@ def schedule_medicine():
     Warning(f"✅ Scheduled {pills_per_day} doses for {med_name}")
     return redirect(url_for("pill.index"))
 
+
+@pill_bp.route("/view_schedule" , methods=["GET"]) 
+def view_schedule():
+    if "email" not in session:
+        return redirect(url_for("auth.login"))
+
+    user = User.query.filter_by(email=session["email"]).first()
+    if not user:
+        return "User not found", 404
+
+    # Get all schedules tied to the user's ID
+    schedules = MedicationSchedule.query.filter_by(user_id=user.id).all()
+
+    return render_template("view_schedule.html", schedules=schedules)
 # if __name__ == "__main__":
 #     app.run(debug=True)

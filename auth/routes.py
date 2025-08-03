@@ -19,16 +19,20 @@ class User(db.Model):
 
     def checkPassword(self, inputted_password):
         return check_password_hash(self.password, inputted_password)
+    schedules = db.relationship('MedicationSchedule', backref='user', lazy=True , foreign_keys='MedicationSchedule.user_id')
+
 
 class MedicationSchedule(db.Model): 
     id = db.Column(db.Integer, primary_key=True)
-    user_email = db.Column(db.String, db.ForeignKey("user.email"), nullable=False)
+    user_email = db.Column(db.String, nullable=False)
     medicine_name = db.Column(db.String, nullable=False)
     total_pills = db.Column(db.Integer, nullable=False)
     pills_per_day = db.Column(db.Integer, nullable=False)
     time_of_day = db.Column(db.String, nullable=False)  # e.g. "08:00, 20:00"
     start_date = db.Column(db.Date, nullable=False, default=date.today)
     notes = db.Column(db.Text)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # ✅ this is critical
+
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":

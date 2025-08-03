@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>📅 Your Medication Schedule</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 40px;
+        background-color: #f9f9f9;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      th,
+      td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #ddd;
+        text-align: left;
+      }
+      th {
+        background-color: #4caf50;
+        color: white;
+      }
+      h1 {
+        color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>📋 Your Medication Schedule</h1>
+
+    {% if schedules %}
+    <table>
+      <thead>
+        <tr>
+          <th>Medicine Name</th>
+          <th>Total Tablets</th>
+          <th>Daily Dosage</th>
+
+          <th>Scheduled Times</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for schedule in schedules %}
+        <tr>
+          <td>{{ schedule.medicine_name }}</td>
+          <td>{{ schedule.total_pills }}</td>
+          <td>{{ schedule.pills_per_day }}</td>
+
+          <td>{{ schedule.time_of_day }}</td>
+          <td>
+            <ul>
+              {% for t in schedule.times %}
+              <li>{{ t }}</li>
+              {% endfor %}
+            </ul>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p>You haven't added any medications to your schedule yet.</p>
+    {% endif %}
+  </body>
+</html>
