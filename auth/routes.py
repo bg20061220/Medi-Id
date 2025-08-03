@@ -3,7 +3,7 @@
 from flask import Blueprint, render_template, request, redirect, session, url_for, flash, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
-
+from datetime import date 
 auth_bp = Blueprint('auth', __name__, template_folder='../templates')
 
 db = SQLAlchemy()  # We'll initialize this in the main app
@@ -20,6 +20,15 @@ class User(db.Model):
     def checkPassword(self, inputted_password):
         return check_password_hash(self.password, inputted_password)
 
+class MedicationSchedule(db.Model): 
+    id = db.Column(db.Integer, primary_key=True)
+    user_email = db.Column(db.String, db.ForeignKey("user.email"), nullable=False)
+    medicine_name = db.Column(db.String, nullable=False)
+    total_pills = db.Column(db.Integer, nullable=False)
+    pills_per_day = db.Column(db.Integer, nullable=False)
+    time_of_day = db.Column(db.String, nullable=False)  # e.g. "08:00, 20:00"
+    start_date = db.Column(db.Date, nullable=False, default=date.today)
+    notes = db.Column(db.Text)
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":

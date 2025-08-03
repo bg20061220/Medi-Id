@@ -1,0 +1,103 @@
+<h2>🗓️ Schedule Your Medication</h2>
+
+<form
+  id="scheduleForm"
+  action="{{ url_for('pill.schedule_medicine') }}"
+  method="POST"
+  onsubmit="return validateTimes()"
+>
+  <input type="hidden" name="medicine_name" value="{{ medicine_name }}" />
+  <label>Medicine Name </label>
+  <input type="text" id="medicine_name" name="medicine_name" value=" " /><br />
+  <label>Total Quantity (tablets):</label>
+  <input type="number" name="total_quantity" required /><br />
+
+  <label>Daily Dosage (number of doses per day):</label>
+  <input
+    type="number"
+    id="daily_dosage"
+    name="daily_dosage"
+    min="1"
+    required
+    oninput="resetTimeInputs()"
+  /><br />
+
+  <div id="timeInputsContainer">
+    <!-- Time inputs will be inserted here -->
+  </div>
+
+  <button type="submit">✅ Confirm Schedule</button>
+</form>
+
+<script>
+  let timeInputCount = 0;
+
+  function resetTimeInputs() {
+    timeInputCount = 0;
+    document.getElementById("timeInputsContainer").innerHTML = "";
+    addTimeInput(); // Add at least one to start
+  }
+
+  function addTimeInput() {
+    const expected = parseInt(
+      document.getElementById("daily_dosage").value || 0
+    );
+
+    if (timeInputCount >= expected) {
+      alert(`⚠️ You’ve already added ${expected} dosage time(s).`);
+      return;
+    }
+
+    timeInputCount++;
+
+    const container = document.getElementById("timeInputsContainer");
+
+    const label = document.createElement("label");
+    label.textContent = `Dosage Time ${timeInputCount}:`;
+
+    const input = document.createElement("input");
+    input.type = "time";
+    input.name = "dosage_time";
+    input.required = true;
+
+    const addButton = document.createElement("button");
+    addButton.type = "button";
+    addButton.textContent = "➕";
+    addButton.onclick = addTimeInput;
+
+    const br = document.createElement("br");
+
+    const wrapper = document.createElement("div");
+    wrapper.appendChild(label);
+    wrapper.appendChild(input);
+    if (timeInputCount < expected) wrapper.appendChild(addButton);
+    wrapper.appendChild(br);
+
+    container.appendChild(wrapper);
+  }
+
+  function validateTimes() {
+    const expected = parseInt(
+      document.getElementById("daily_dosage").value || 0
+    );
+    const actual = document.querySelectorAll(
+      "input[name='dosage_time']"
+    ).length;
+
+    if (expected !== actual) {
+      alert(
+        `⚠️ You must enter exactly ${expected} dosage time(s). You currently have ${actual}.`
+      );
+      return false;
+    }
+
+    return true;
+  }
+
+  // Auto-init first time input
+  window.onload = () => {
+    if (document.getElementById("daily_dosage").value) {
+      resetTimeInputs();
+    }
+  };
+</script>

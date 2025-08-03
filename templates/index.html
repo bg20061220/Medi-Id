@@ -69,10 +69,20 @@
       ({{ result.image_matches[0][1] }}%)
     </p>
     <p><strong>🔴 Final Decision:</strong> {{ result.decision }}</p>
+
     {% endif %}
 
     <br />
     <img src="{{ image_path }}" alt="Uploaded Pill" width="200" />
+
+    <form action="{{ url_for('pill.schedule_form') }}" method="GET">
+      <input
+        type="hidden"
+        name="medicine_name"
+        value="{{ result.ocr_text or result.image_matches[0][0] }}"
+      />
+      <button type="submit">➕ Add to Schedule</button>
+    </form>
 
     {% endif %}
   </body>
