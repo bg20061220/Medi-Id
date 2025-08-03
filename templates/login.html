@@ -1,123 +1,136 @@
 <!DOCTYPE html>
-<html lang="en" >
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Gradient Login</title>
-  <style>
-    body {
-      margin: 0;
-      height: 100vh;
-      background: linear-gradient(135deg, #EFA1A1, #F1B04C);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: 'Segoe UI', sans-serif;
-    }
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gradient Login</title>
+    <style>
+      body {
+        margin: 0;
+        height: 100vh;
+        background: linear-gradient(135deg, #efa1a1, #f1b04c);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: "Segoe UI", sans-serif;
+      }
       .login-container {
-      background: white;
-      padding: 30px 40px;
-      border-radius: 16px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-      width: 360px;
-      text-align: center;
-    }
+        background: white;
+        padding: 30px 40px;
+        border-radius: 16px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        width: 360px;
+        text-align: center;
+      }
 
-    .input-group {
-      display: flex;
-      align-items: center;
-      margin-bottom: 20px;
-      border-radius: 12px;
-      border: 1px solid #ccc;
-      padding: 10px 15px;
-      gap: 12px;
-    }
+      .input-group {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        border-radius: 12px;
+        border: 1px solid #ccc;
+        padding: 10px 15px;
+        gap: 12px;
+      }
 
-    .input-group .icon {
-      font-size: 1.3rem;
-      width: 32px;
-      height: 32px;
-      background: #f0f0f0;
-      border-radius: 12px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      user-select: none;
-    }
+      .input-group .icon {
+        font-size: 1.3rem;
+        width: 32px;
+        height: 32px;
+        background: #f0f0f0;
+        border-radius: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        user-select: none;
+      }
 
-    .input-group input {
-      border: none;
-      outline: none;
-      flex: 1;
-      font-size: 1rem;
-      padding: 8px 6px;
-    }
+      .input-group input {
+        border: none;
+        outline: none;
+        flex: 1;
+        font-size: 1rem;
+        padding: 8px 6px;
+      }
 
-    button {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 12px;
-      background-color: #d62828;
-      color: white;
-      font-size: 1.1rem;
-      cursor: pointer;
-      margin-bottom: 15px;
-      transition: background-color 0.3s ease;
-    }
+      button {
+        width: 100%;
+        padding: 14px;
+        border: none;
+        border-radius: 12px;
+        background-color: #d62828;
+        color: white;
+        font-size: 1.1rem;
+        cursor: pointer;
+        margin-bottom: 15px;
+        transition: background-color 0.3s ease;
+      }
 
-    button:hover {
-      background-color: #b81e1e;
-    }
+      button:hover {
+        background-color: #b81e1e;
+      }
 
-    .links {
-      font-size: 0.9rem;
-      color: #444;
-      display: flex;
-      justify-content: space-between;
-      margin-top: 10px;
-    }
+      .links {
+        font-size: 0.9rem;
+        color: #444;
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+      }
 
-    .links a {
-      color: #d62828;
-      text-decoration: underline;
-      cursor: pointer;
-      user-select: none;
-    }
+      .links a {
+        color: #d62828;
+        text-decoration: underline;
+        cursor: pointer;
+        user-select: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-container">
+      <h2>Login</h2>
 
-  </style>
-</head>
-<body>
-  <div class="login-container">
-    <h2>Login</h2>
-
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <ul class="flashes">
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %}
+      <ul class="flashes">
         {% for category, message in messages %}
-          <li class="{{ category }}">{{ message }}</li>
+        <li class="{{ category }}">{{ message }}</li>
         {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
+      </ul>
+      {% endif %} {% endwith %}
 
-    <form id="loginForm" action="{{ url_for('login') }}" method="post">
-      <div class="input-group">
-        <div class="icon">👤</div>
-        <input type="email" name="email" placeholder="Email" autocomplete="off" required />
+      <form id="loginForm" action="{{ url_for('auth.login') }}" method="post">
+        <div class="input-group">
+          <div class="icon">👤</div>
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            autocomplete="off"
+            required
+          />
+        </div>
+
+        <div class="input-group">
+          <div class="icon">🔒</div>
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            autocomplete="off"
+            required
+          />
+        </div>
+
+        <button type="submit">Log In</button>
+      </form>
+
+      <div class="links">
+        <p>
+          Don't have an account?
+          <a href="{{ url_for('auth.register') }}">Create one here!</a>
+        </p>
       </div>
-
-      <div class="input-group">
-        <div class="icon">🔒</div>
-        <input type="password" name="password" placeholder="Password" autocomplete="off" required />
-      </div>
-
-      <button type="submit">Log In</button>
-    </form>
-
-    <div class="links">
-      <p>Don't have an account? <a href="{{ url_for('register') }}">Create one here!</a></p>
     </div>
-  </div>
-</body>
+  </body>
 </html>

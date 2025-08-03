@@ -1,35 +1,22 @@
-# app.py
-
-from flask import Flask, render_template, request
-from werkzeug.utils import secure_filename
-from pill_identifier.classifier import identify_pill
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from auth.routes import auth_bp, db
+from pill_identifier.app import pill_bp
 import os
 from dotenv import load_dotenv
-
 load_dotenv()
-
 app = Flask(__name__)
-UPLOAD_FOLDER = os.path.join("static", "uploads")
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+app.secret_key = os.getenv("SECRET_KEY")
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///th25medipillaiusers.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-@app.route("/", methods=["GET", "POST"])
-def index():
-    result = None
-    uploaded_file_path = None
+db.init_app(app)
 
-    if request.method == "POST":
-        file = request.files["image"]
-        expected_name  = request.form.get("expected_name", "").strip()
-        if file:
-            filename = secure_filename(file.filename)
-            uploaded_file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-            file.save(uploaded_file_path)
+app.register_blueprint(auth_bp)
+app.register_blueprint(pill_bp, url_prefix='/')
 
-            # Run AI identification
-            result = identify_pill(uploaded_file_path , expected_name)
-
-    return render_template("index.html", result=result, image_path=uploaded_file_path)
+with app.app_context():
+    db.create_all()
 
 if __name__ == "__main__":
     app.run(debug=True)

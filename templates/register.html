@@ -1,143 +1,165 @@
 <!DOCTYPE html>
-<html lang="en" >
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Account Setup</title>
-  <style>
-    body {
-      margin: 0;
-      height: 100vh;
-      background: linear-gradient(135deg, #EFA1A1, #F1B04C);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: 'Segoe UI', sans-serif;
-    }
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Account Setup</title>
+    <style>
+      body {
+        margin: 0;
+        height: 100vh;
+        background: linear-gradient(135deg, #efa1a1, #f1b04c);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: "Segoe UI", sans-serif;
+      }
 
-    .container {
-      background-color: white;
-      padding: 40px;
-      border-radius: 16px;
-      width: 360px;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-      text-align: center;
-    }
+      .container {
+        background-color: white;
+        padding: 40px;
+        border-radius: 16px;
+        width: 360px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        text-align: center;
+      }
 
-    h2 {
-      margin-bottom: 30px;
-      font-weight: normal;
-      font-size: 24px;
-    }
+      h2 {
+        margin-bottom: 30px;
+        font-weight: normal;
+        font-size: 24px;
+      }
 
-    .input-group {
-      display: flex;
-      align-items: center;
-      margin-bottom: 20px;
-      border-radius: 12px;
-      border: 1px solid #ccc;
-      padding: 10px 15px;
-      background: #f9f9f9;
-      gap: 12px;
-    }
+      .input-group {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        border-radius: 12px;
+        border: 1px solid #ccc;
+        padding: 10px 15px;
+        background: #f9f9f9;
+        gap: 12px;
+      }
 
-    .input-group .icon {
-      font-size: 1.3rem;
-      width: 32px;
-      height: 32px;
-      background: #f0f0f0;
-      border-radius: 12px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      user-select: none;
-    }
+      .input-group .icon {
+        font-size: 1.3rem;
+        width: 32px;
+        height: 32px;
+        background: #f0f0f0;
+        border-radius: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        user-select: none;
+      }
 
-    .input-group input {
-      border: none;
-      outline: none;
-      flex: 1;
-      font-size: 1rem;
-      background: transparent;
-      padding: 8px 6px;
-      color: #333;
-    }
+      .input-group input {
+        border: none;
+        outline: none;
+        flex: 1;
+        font-size: 1rem;
+        background: transparent;
+        padding: 8px 6px;
+        color: #333;
+      }
 
-    .input-group input::placeholder {
-      color: #bbb;
-    }
+      .input-group input::placeholder {
+        color: #bbb;
+      }
 
-    .checkbox-group {
-      display: flex;
-      align-items: center;
-      font-size: 0.85rem;
-      text-align: left;
-      margin-bottom: 25px;
-    }
+      .checkbox-group {
+        display: flex;
+        align-items: center;
+        font-size: 0.85rem;
+        text-align: left;
+        margin-bottom: 25px;
+      }
 
-    .checkbox-group input {
-      margin-right: 10px;
-    }
+      .checkbox-group input {
+        margin-right: 10px;
+      }
 
-    button {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 12px;
-      background-color: #d62828;
-      color: white;
-      font-size: 1.1rem;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
+      button {
+        width: 100%;
+        padding: 14px;
+        border: none;
+        border-radius: 12px;
+        background-color: #d62828;
+        color: white;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
 
-    button:hover {
-      background-color: #b81e1e;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h2>Account Setup</h2>
+      button:hover {
+        background-color: #b81e1e;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Account Setup</h2>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <ul class="flashes">
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %}
+      <ul class="flashes">
         {% for category, message in messages %}
-          <li class="{{ category }}">{{ message }}</li>
+        <li class="{{ category }}">{{ message }}</li>
         {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
+      </ul>
+      {% endif %} {% endwith %}
 
-    <form id="registerForm" action="{{ url_for('register') }}" method="post">
-      <div class="input-group">
-        <div class="icon">👤</div>
-        <input type="email" name="email" placeholder="Email" autocomplete="off" required/>
+      <form
+        id="registerForm"
+        action="{{ url_for('auth.register') }}"
+        method="post"
+      >
+        <div class="input-group">
+          <div class="icon">👤</div>
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            autocomplete="off"
+            required
+          />
+        </div>
+
+        <div class="input-group">
+          <div class="icon">🔒</div>
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            autocomplete="off"
+            required
+          />
+        </div>
+
+        <div class="input-group">
+          <div class="icon">🔒</div>
+          <input
+            type="password"
+            name="confirmPassword"
+            placeholder="Confirm Password"
+            autocomplete="off"
+            required
+          />
+        </div>
+
+        <div class="checkbox-group">
+          <input type="checkbox" id="terms" />
+          <label for="terms">Agree to Terms & Privacy Policy</label>
+        </div>
+
+        <button type="submit">Next</button>
+      </form>
+
+      <div class="links">
+        <a href="{{ url_for('auth.login') }}"
+          >Already have an account? Sign in here.</a
+        >
       </div>
-
-      <div class="input-group">
-        <div class="icon">🔒</div>
-        <input type="password" name="password" placeholder="Password" autocomplete="off" required/>
-      </div>
-
-      <div class="input-group">
-        <div class="icon">🔒</div>
-        <input type="password" name="confirmPassword" placeholder="Confirm Password" autocomplete="off" required/>
-      </div>
-
-      <div class="checkbox-group">
-        <input type="checkbox" id="terms" />
-        <label for="terms">Agree to Terms & Privacy Policy</label>
-      </div>
-
-      <button type="submit">Next</button>
-
-    </form>
-
-    <div class="links">
-      <a href="{{ url_for('login') }}">Already have an account? Sign in here.</a>
     </div>
-  </div>
-</body>
+  </body>
 </html>
