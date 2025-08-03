@@ -90,14 +90,14 @@
     <div class="login-container">
       <h2>Login</h2>
 
-      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      <!-- {% with messages = get_flashed_messages(with_categories=true) %} {% if
       messages %}
       <ul class="flashes">
         {% for category, message in messages %}
         <li class="{{ category }}">{{ message }}</li>
         {% endfor %}
       </ul>
-      {% endif %} {% endwith %}
+      {% endif %} {% endwith %} -->
 
       <form id="loginForm" action="{{ url_for('auth.login') }}" method="post">
         <div class="input-group">

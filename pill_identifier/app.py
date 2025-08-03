@@ -55,34 +55,35 @@ def schedule_medicine():
 
     user_email = session["email"]
     med_name = request.form.get("medicine_name")
-    total_pills = int(request.form["total_quantity"])
-    pills_per_day = int(request.form["daily_dosage"])
+    total_pills = int(request.form.get("total_quantity", 0))
+    pills_per_day = int(request.form.get("daily_dosage", 0))
 
-    # Collect all 'dosage_time' fields (multiple with same name)
     dosage_times = request.form.getlist("dosage_time")
 
     if len(dosage_times) != pills_per_day:
-        Warning("❗Mismatch between number of dosages and times entered.")
+        flash("❗Mismatch between number of dosages and times entered.", "error")
         return redirect(url_for("pill.schedule_form", medicine_name=med_name))
-    user = User.query.filter_by(email="123test@gmail.com").first()
+
+    user = User.query.filter_by(email=user_email).first()
     if not user:
-    # Handle user not found error
-        pass
+        flash("User not found. Please log in again.", "error")
+        return redirect(url_for("auth.login"))
 
-    for time in dosage_times:
-        new_entry = MedicationSchedule(
-             user_id = user.id,
-            user_email=user_email,
-            medicine_name=med_name,
-            total_pills=total_pills,
-            pills_per_day=pills_per_day,
-            time_of_day=time,  # One entry per time for now
-           
-        )
-        db.session.add(new_entry)
+    # Combine all dosage times as a CSV string
+    time_of_day = ",".join(dosage_times)
 
+    # Create one schedule entry per medicine per user
+    new_schedule = MedicationSchedule(
+        user_id=user.id,
+        medicine_name=med_name,
+        total_pills=total_pills,
+        pills_per_day=pills_per_day,
+        time_of_day=time_of_day
+    )
+    db.session.add(new_schedule)
     db.session.commit()
-    Warning(f"✅ Scheduled {pills_per_day} doses for {med_name}")
+
+    flash(f"✅ Scheduled {pills_per_day} doses for {med_name}", "success")
     return redirect(url_for("pill.index"))
 
 
@@ -99,5 +100,15 @@ def view_schedule():
     schedules = MedicationSchedule.query.filter_by(user_id=user.id).all()
 
     return render_template("view_schedule.html", schedules=schedules)
+@pill_bp.route("/welcome", methods=["GET"])
+def welcome():
+    if "email" not in session:
+        return redirect(url_for("auth.login"))
+
+    user = User.query.filter_by(email=session["email"]).first()
+    if not user:
+        return "User not found", 404
+
+    return render_template("welcome.html", user=user)
 # if __name__ == "__main__":
 #     app.run(debug=True)

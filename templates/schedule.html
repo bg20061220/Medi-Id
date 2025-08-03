@@ -1,103 +1,174 @@
-<h2>🗓️ Schedule Your Medication</h2>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Schedule Your Medication</title>
+    <style>
+      /* Simple styles to organize form */
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 500px;
+        margin: 20px auto;
+      }
+      label {
+        display: block;
+        margin-top: 15px;
+      }
+      input[type="text"],
+      input[type="number"],
+      input[type="time"] {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        box-sizing: border-box;
+      }
+      button {
+        margin-top: 20px;
+        padding: 10px 15px;
+        font-size: 1rem;
+      }
+      .flashes {
+        list-style: none;
+        padding: 0;
+      }
+      .flashes li {
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+      }
+      .error {
+        background-color: #f8d7da;
+        color: #842029;
+      }
+      .success {
+        background-color: #d1e7dd;
+        color: #0f5132;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>🗓️ Schedule Your Medication</h2>
 
-<form
-  id="scheduleForm"
-  action="{{ url_for('pill.schedule_medicine') }}"
-  method="POST"
-  onsubmit="return validateTimes()"
->
-  <input type="hidden" name="medicine_name" value="{{ medicine_name }}" />
-  <label>Medicine Name </label>
-  <input type="text" id="medicine_name" name="medicine_name" value=" " /><br />
-  <label>Total Quantity (tablets):</label>
-  <input type="number" name="total_quantity" required /><br />
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
+    <ul class="flashes">
+      {% for category, message in messages %}
+      <li class="{{ category }}">{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %} {% endwith %}
 
-  <label>Daily Dosage (number of doses per day):</label>
-  <input
-    type="number"
-    id="daily_dosage"
-    name="daily_dosage"
-    min="1"
-    required
-    oninput="resetTimeInputs()"
-  /><br />
+    <form
+      id="scheduleForm"
+      action="{{ url_for('pill.schedule_medicine') }}"
+      method="POST"
+      onsubmit="return validateTimes()"
+    >
+      <label for="medicine_name">Medicine Name</label>
+      <input
+        type="text"
+        id="medicine_name"
+        name="medicine_name"
+        value="{{ medicine_name }}"
+        required
+      />
 
-  <div id="timeInputsContainer">
-    <!-- Time inputs will be inserted here -->
-  </div>
+      <label for="total_quantity">Total Quantity (tablets)</label>
+      <input
+        type="number"
+        id="total_quantity"
+        name="total_quantity"
+        min="1"
+        required
+      />
 
-  <button type="submit">✅ Confirm Schedule</button>
-</form>
+      <label for="daily_dosage">Daily Dosage (number of doses per day)</label>
+      <input
+        type="number"
+        id="daily_dosage"
+        name="daily_dosage"
+        min="1"
+        required
+        oninput="resetTimeInputs()"
+      />
 
-<script>
-  let timeInputCount = 0;
+      <div id="timeInputsContainer"></div>
 
-  function resetTimeInputs() {
-    timeInputCount = 0;
-    document.getElementById("timeInputsContainer").innerHTML = "";
-    addTimeInput(); // Add at least one to start
-  }
+      <button type="submit">✅ Confirm Schedule</button>
+    </form>
 
-  function addTimeInput() {
-    const expected = parseInt(
-      document.getElementById("daily_dosage").value || 0
-    );
+    <script>
+      let timeInputCount = 0;
 
-    if (timeInputCount >= expected) {
-      alert(`⚠️ You’ve already added ${expected} dosage time(s).`);
-      return;
-    }
+      function resetTimeInputs() {
+        timeInputCount = 0;
+        const container = document.getElementById("timeInputsContainer");
+        container.innerHTML = "";
+        addTimeInput();
+      }
 
-    timeInputCount++;
+      function addTimeInput() {
+        const expected = parseInt(
+          document.getElementById("daily_dosage").value || 0
+        );
 
-    const container = document.getElementById("timeInputsContainer");
+        if (timeInputCount >= expected) {
+          alert(`⚠️ You’ve already added ${expected} dosage time(s).`);
+          return;
+        }
 
-    const label = document.createElement("label");
-    label.textContent = `Dosage Time ${timeInputCount}:`;
+        timeInputCount++;
 
-    const input = document.createElement("input");
-    input.type = "time";
-    input.name = "dosage_time";
-    input.required = true;
+        const container = document.getElementById("timeInputsContainer");
 
-    const addButton = document.createElement("button");
-    addButton.type = "button";
-    addButton.textContent = "➕";
-    addButton.onclick = addTimeInput;
+        const label = document.createElement("label");
+        label.textContent = `Dosage Time ${timeInputCount}:`;
 
-    const br = document.createElement("br");
+        const input = document.createElement("input");
+        input.type = "time";
+        input.name = "dosage_time";
+        input.required = true;
 
-    const wrapper = document.createElement("div");
-    wrapper.appendChild(label);
-    wrapper.appendChild(input);
-    if (timeInputCount < expected) wrapper.appendChild(addButton);
-    wrapper.appendChild(br);
+        const addButton = document.createElement("button");
+        addButton.type = "button";
+        addButton.textContent = "➕";
+        addButton.onclick = addTimeInput;
 
-    container.appendChild(wrapper);
-  }
+        const br = document.createElement("br");
 
-  function validateTimes() {
-    const expected = parseInt(
-      document.getElementById("daily_dosage").value || 0
-    );
-    const actual = document.querySelectorAll(
-      "input[name='dosage_time']"
-    ).length;
+        const wrapper = document.createElement("div");
+        wrapper.appendChild(label);
+        wrapper.appendChild(input);
+        if (timeInputCount < expected) wrapper.appendChild(addButton);
+        wrapper.appendChild(br);
 
-    if (expected !== actual) {
-      alert(
-        `⚠️ You must enter exactly ${expected} dosage time(s). You currently have ${actual}.`
-      );
-      return false;
-    }
+        container.appendChild(wrapper);
+      }
 
-    return true;
-  }
+      function validateTimes() {
+        const expected = parseInt(
+          document.getElementById("daily_dosage").value || 0
+        );
+        const actual = document.querySelectorAll(
+          "input[name='dosage_time']"
+        ).length;
 
-  // Auto-init first time input
-  window.onload = () => {
-    if (document.getElementById("daily_dosage").value) {
-      resetTimeInputs();
-    }
-  };
-</script>
+        if (expected !== actual) {
+          alert(
+            `⚠️ You must enter exactly ${expected} dosage time(s). You currently have ${actual}.`
+          );
+          return false;
+        }
+
+        return true;
+      }
+
+      window.onload = () => {
+        const val = document.getElementById("daily_dosage").value;
+        if (val && parseInt(val) > 0) {
+          resetTimeInputs();
+        }
+      };
+    </script>
+  </body>
+</html>

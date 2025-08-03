@@ -10,28 +10,36 @@ db = SQLAlchemy()  # We'll initialize this in the main app
 
 # User model needs to be accessible here too
 class User(db.Model):
+    __tablename__ = 'user'  # Explicitly define the table name
+
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(), unique=True, nullable=False)
     password = db.Column(db.String(), nullable=False)
+
+    # Relationship to medication schedules
+    schedules = db.relationship('MedicationSchedule', backref='user', lazy=True, cascade="all, delete-orphan")
 
     def setPassword(self, password):
         self.password = generate_password_hash(password)
 
     def checkPassword(self, inputted_password):
         return check_password_hash(self.password, inputted_password)
-    schedules = db.relationship('MedicationSchedule', backref='user', lazy=True , foreign_keys='MedicationSchedule.user_id')
+
 
 
 class MedicationSchedule(db.Model): 
+    __tablename__ = 'medication_schedule'
+
     id = db.Column(db.Integer, primary_key=True)
-    user_email = db.Column(db.String, nullable=False)
     medicine_name = db.Column(db.String, nullable=False)
     total_pills = db.Column(db.Integer, nullable=False)
     pills_per_day = db.Column(db.Integer, nullable=False)
     time_of_day = db.Column(db.String, nullable=False)  # e.g. "08:00, 20:00"
     start_date = db.Column(db.Date, nullable=False, default=date.today)
     notes = db.Column(db.Text)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # ✅ this is critical
+
+    # Foreign key and relationship to user
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
@@ -49,7 +57,7 @@ def login():
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        email = request.form['email']
+        email = request.form['email'].strip().lower()
         password = request.form['password']
         confirmPassword = request.form['confirmPassword']
         exists = User.query.filter_by(email=email).first()
@@ -62,13 +70,13 @@ def register():
             flash('Passwords do not match.', 'error')
             return render_template("register.html")
 
-        elif not exists and password == confirmPassword:
-            user = User(email=email)
-            user.setPassword(password)
-            db.session.add(user)
-            db.session.commit()
-            flash('Your account was successfully created! Sign into your account on the login page here.')
-            return render_template("login.html")
+        user = User(email=email)
+        user.setPassword(password)
+        db.session.add(user)
+        db.session.commit()
+
+        flash('Account created! Please log in.')
+        return redirect(url_for("auth.login"))
 
     return render_template("register.html")
 
