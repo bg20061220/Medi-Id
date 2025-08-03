@@ -2,128 +2,50 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>📅 Your Medication Schedule</title>
+    <title>📋 Your Medication Schedule</title>
     <style>
-      /* Reset & base */
-      * {
-        box-sizing: border-box;
-      }
       body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background: #f5f7fa;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #fcc6bb, #ffdcb8, #f2c5d0);
         margin: 0;
-        padding: 40px 20px;
-        color: #333;
+        padding: 2rem;
       }
 
       h1 {
         text-align: center;
-        color: #2c3e50;
-        margin-bottom: 30px;
-        font-weight: 700;
-        font-size: 2.2rem;
+        color: #333;
+        margin-bottom: 2rem;
       }
 
       table {
         width: 100%;
-        max-width: 900px;
-        margin: 0 auto;
-        border-collapse: separate;
-        border-spacing: 0 12px;
-        background: #fff;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
+        border-collapse: collapse;
+        background: white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
         overflow: hidden;
       }
 
-      thead tr {
-        background-color: #3498db;
-        color: white;
+      th,
+      td {
+        padding: 1rem;
+        border-bottom: 1px solid #eee;
         text-align: left;
-        font-weight: 600;
-        font-size: 1rem;
-        letter-spacing: 0.03em;
       }
 
-      thead th {
-        padding: 14px 20px;
-      }
-
-      tbody tr {
-        background: #fdfdfd;
-        transition: background-color 0.3s ease;
-        cursor: default;
-      }
-
-      tbody tr:hover {
-        background-color: #ecf6fc;
-      }
-
-      tbody td {
-        padding: 16px 20px;
-        vertical-align: middle;
-        font-size: 0.95rem;
-        border-bottom: 1px solid #e2e8f0;
-      }
-
-      ul.times-list {
-        list-style: none;
-        padding-left: 0;
-        margin: 0;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-      }
-
-      ul.times-list li {
-        background: #3498db;
+      th {
+        background-color: #ffb5a7;
         color: white;
-        padding: 6px 12px;
-        border-radius: 16px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
 
-      p.no-schedules {
-        max-width: 600px;
-        margin: 30px auto;
+      td:last-child {
+        max-width: 200px;
+        word-break: break-word;
+      }
+
+      p {
         text-align: center;
-        font-size: 1.2rem;
-        color: #777;
-        font-style: italic;
-      }
-
-      /* Responsive */
-      @media (max-width: 600px) {
-        table {
-          border-spacing: 0 8px;
-        }
-        thead tr {
-          display: none;
-        }
-        tbody td {
-          display: block;
-          padding: 12px 15px;
-          border-bottom: 1px solid #ddd;
-          font-size: 1rem;
-        }
-        tbody tr {
-          margin-bottom: 20px;
-          background: #fff;
-          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-          border-radius: 8px;
-        }
-        tbody td::before {
-          content: attr(data-label);
-          font-weight: 700;
-          display: block;
-          margin-bottom: 6px;
-          color: #3498db;
-        }
-        ul.times-list {
-          justify-content: flex-start;
-        }
+        color: #555;
       }
     </style>
   </head>
@@ -137,30 +59,22 @@
           <th>Medicine Name</th>
           <th>Total Tablets</th>
           <th>Daily Dosage</th>
-          <th>Scheduled Times</th>
+          <th>Scheduled Time</th>
         </tr>
       </thead>
       <tbody>
         {% for schedule in schedules %}
         <tr>
-          <td data-label="Medicine Name">{{ schedule.medicine_name }}</td>
-          <td data-label="Total Tablets">{{ schedule.total_pills }}</td>
-          <td data-label="Daily Dosage">{{ schedule.pills_per_day }}</td>
-          <td data-label="Scheduled Times">
-            <ul class="times-list">
-              {% for t in schedule.time_of_day.split(',') %}
-              <li>{{ t }}</li>
-              {% endfor %}
-            </ul>
-          </td>
+          <td>{{ schedule.medicine_name }}</td>
+          <td>{{ schedule.total_pills }}</td>
+          <td>{{ schedule.pills_per_day }}</td>
+          <td>{{ schedule.time_of_day }}</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
     {% else %}
-    <p class="no-schedules">
-      You haven't added any medications to your schedule yet.
-    </p>
+    <p>You haven't added any medications to your schedule yet.</p>
     {% endif %}
   </body>
 </html>

@@ -2,61 +2,65 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Schedule Your Medication</title>
+    <title>🗓️ Schedule Medication</title>
     <style>
-      /* Simple styles to organize form */
       body {
-        font-family: Arial, sans-serif;
-        max-width: 500px;
-        margin: 20px auto;
+        font-family: "Segoe UI", sans-serif;
+        background: linear-gradient(135deg, #fcc6bb, #ffdcb8, #f2c5d0);
+        margin: 0;
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
       }
+
+      h2 {
+        color: #333;
+        margin-bottom: 1rem;
+      }
+
+      form {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        width: 100%;
+      }
+
       label {
         display: block;
-        margin-top: 15px;
+        margin-top: 1rem;
+        font-weight: bold;
       }
-      input[type="text"],
-      input[type="number"],
-      input[type="time"] {
+
+      input {
         width: 100%;
-        padding: 8px;
-        margin-top: 5px;
-        box-sizing: border-box;
+        padding: 0.75rem;
+        margin-top: 0.5rem;
+        border-radius: 8px;
+        border: 1px solid #ccc;
       }
+
       button {
-        margin-top: 20px;
-        padding: 10px 15px;
+        margin-top: 1.5rem;
+        padding: 0.75rem 1.5rem;
         font-size: 1rem;
+        border: none;
+        border-radius: 8px;
+        background-color: #ffb5a7;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
       }
-      .flashes {
-        list-style: none;
-        padding: 0;
-      }
-      .flashes li {
-        padding: 10px;
-        margin-bottom: 10px;
-        border-radius: 5px;
-      }
-      .error {
-        background-color: #f8d7da;
-        color: #842029;
-      }
-      .success {
-        background-color: #d1e7dd;
-        color: #0f5132;
+
+      button:hover {
+        background-color: #f28579;
       }
     </style>
   </head>
   <body>
     <h2>🗓️ Schedule Your Medication</h2>
-
-    {% with messages = get_flashed_messages(with_categories=true) %} {% if
-    messages %}
-    <ul class="flashes">
-      {% for category, message in messages %}
-      <li class="{{ category }}">{{ message }}</li>
-      {% endfor %}
-    </ul>
-    {% endif %} {% endwith %}
 
     <form
       id="scheduleForm"
@@ -64,25 +68,19 @@
       method="POST"
       onsubmit="return validateTimes()"
     >
-      <label for="medicine_name">Medicine Name</label>
+      <input type="hidden" name="medicine_name" value="{{ medicine_name }}" />
+      <label>Medicine Name</label>
       <input
         type="text"
         id="medicine_name"
         name="medicine_name"
-        value="{{ medicine_name }}"
-        required
-      />
+        value=""
+      /><br />
 
-      <label for="total_quantity">Total Quantity (tablets)</label>
-      <input
-        type="number"
-        id="total_quantity"
-        name="total_quantity"
-        min="1"
-        required
-      />
+      <label>Total Quantity (tablets):</label>
+      <input type="number" name="total_quantity" required /><br />
 
-      <label for="daily_dosage">Daily Dosage (number of doses per day)</label>
+      <label>Daily Dosage (number of doses per day):</label>
       <input
         type="number"
         id="daily_dosage"
@@ -90,9 +88,11 @@
         min="1"
         required
         oninput="resetTimeInputs()"
-      />
+      /><br />
 
-      <div id="timeInputsContainer"></div>
+      <div id="timeInputsContainer">
+        <!-- Time inputs will be inserted here -->
+      </div>
 
       <button type="submit">✅ Confirm Schedule</button>
     </form>
@@ -102,8 +102,7 @@
 
       function resetTimeInputs() {
         timeInputCount = 0;
-        const container = document.getElementById("timeInputsContainer");
-        container.innerHTML = "";
+        document.getElementById("timeInputsContainer").innerHTML = "";
         addTimeInput();
       }
 
@@ -111,7 +110,6 @@
         const expected = parseInt(
           document.getElementById("daily_dosage").value || 0
         );
-
         if (timeInputCount >= expected) {
           alert(`⚠️ You’ve already added ${expected} dosage time(s).`);
           return;
@@ -134,13 +132,10 @@
         addButton.textContent = "➕";
         addButton.onclick = addTimeInput;
 
-        const br = document.createElement("br");
-
         const wrapper = document.createElement("div");
         wrapper.appendChild(label);
         wrapper.appendChild(input);
         if (timeInputCount < expected) wrapper.appendChild(addButton);
-        wrapper.appendChild(br);
 
         container.appendChild(wrapper);
       }
@@ -152,20 +147,17 @@
         const actual = document.querySelectorAll(
           "input[name='dosage_time']"
         ).length;
-
         if (expected !== actual) {
           alert(
             `⚠️ You must enter exactly ${expected} dosage time(s). You currently have ${actual}.`
           );
           return false;
         }
-
         return true;
       }
 
       window.onload = () => {
-        const val = document.getElementById("daily_dosage").value;
-        if (val && parseInt(val) > 0) {
+        if (document.getElementById("daily_dosage").value) {
           resetTimeInputs();
         }
       };

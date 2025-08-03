@@ -110,5 +110,17 @@ def welcome():
         return "User not found", 404
 
     return render_template("welcome.html", user=user)
+
+
+@pill_bp.route("/scan_history", methods=["GET"])
+def scan_history():
+    uploads_dir = os.path.join("static", "uploads")
+    image_files = [
+        f for f in os.listdir(uploads_dir)
+        if f.lower().endswith((".png", ".jpg", ".jpeg", ".gif"))
+    ]
+    image_urls = [url_for('static', filename=f'uploads/{img}') for img in image_files]
+
+    return render_template("scan_history.html", images=image_urls)
 # if __name__ == "__main__":
 #     app.run(debug=True)

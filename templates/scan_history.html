@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>📸 Scan History</title>
+    <style>
+      body {
+        font-family: "Segoe UI", sans-serif;
+        padding: 2rem;
+        background: linear-gradient(135deg, #fcc6bb, #ffdcb8, #f2c5d0);
+        text-align: center;
+      }
+
+      h1 {
+        color: #2c3e50;
+        margin-bottom: 2rem;
+      }
+
+      .grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+      }
+
+      .grid img {
+        max-width: 200px;
+        height: auto;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      p {
+        color: #444;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>📸 Scan History</h1>
+
+    {% if images %}
+    <div class="grid">
+      {% for img in images %}
+      <img src="{{ img }}" alt="Scanned Pill Image" />
+      {% endfor %}
+    </div>
+    {% else %}
+    <p>No scans found yet.</p>
+    {% endif %}
+  </body>
+</html>
