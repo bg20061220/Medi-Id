@@ -47,6 +47,33 @@
         text-align: center;
         color: #555;
       }
+      .reminder-btn {
+        background-color: #ffb5a7; /* pale pink */
+        color: #5a2a27; /* darkish brown/red for contrast */
+        border: none;
+        padding: 0.6rem 1.2rem;
+        font-size: 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        user-select: none;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      }
+
+      .reminder-btn:hover {
+        background-color: #f28579; /* darker coral */
+        color: white;
+      }
+
+      .reminder-btn.enabled {
+        background-color: #4caf50; /* green */
+        color: white;
+        box-shadow: 0 2px 8px rgba(76, 175, 80, 0.7);
+      }
+
+      .reminder-btn.enabled:hover {
+        background-color: #388e3c; /* darker green on hover */
+      }
     </style>
   </head>
   <body>
@@ -69,6 +96,11 @@
           <td>{{ schedule.total_pills }}</td>
           <td>{{ schedule.pills_per_day }}</td>
           <td>{{ schedule.time_of_day }}</td>
+          <td>
+            <button class="reminder-btn" data-enabled="false" type="button">
+              🔔 Enable Reminder
+            </button>
+          </td>
         </tr>
         {% endfor %}
       </tbody>
@@ -76,5 +108,24 @@
     {% else %}
     <p>You haven't added any medications to your schedule yet.</p>
     {% endif %}
+    <script>
+      document.querySelectorAll(".reminder-btn").forEach((button) => {
+        button.addEventListener("click", () => {
+          const enabled = button.getAttribute("data-enabled") === "true";
+
+          if (!enabled) {
+            // Turn ON reminder
+            button.textContent = "🔔 Notification ON";
+            button.style.color = "green";
+            button.setAttribute("data-enabled", "true");
+          } else {
+            // Turn OFF reminder
+            button.textContent = "🔕 Notification OFF";
+            button.style.color = "red";
+            button.setAttribute("data-enabled", "false");
+          }
+        });
+      });
+    </script>
   </body>
 </html>
